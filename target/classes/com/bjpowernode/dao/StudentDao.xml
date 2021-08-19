@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--  namespace：叫做命名空间。可以是自定义的字符串、
+这里要求使用 dao接口 的全限定名称。 -->
+<!--  mapper中 可以使用特定的标签，表示数据库的特定操作  -->
+<!--  id是执行sql语句的唯一标识，可以自定义，要求使用接口中的方法名称  -->
+<!--  resultType：表示查询结果类型的，遍历结果集返回java对象的类型。
+这里要求使用 java对象 的全限定名称。 -->
+<mapper namespace="com.bjpowernode.dao.StudentDao">
+    <!--    第一种查询方式  单条查询-->
+    <select id="selectStudents" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2 order by id
+    </select>
+
+    <insert id="insertStudent">
+        insert into t_student2 values(#{id},#{name},#{email},#{age})
+    </insert>
+    <!--    第二种查询方式  多条查询-注解方式@Param -->
+    <select id="selectMulitStudents" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2 where name=#{myname} or age=#{myage}
+    </select>
+
+    <!--    第三种查询方式  多条查询-对象属性的方式-->
+    <select id="selectMultiObject" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2 where name=#{paramName} or age=#{paramAge}
+    </select>
+
+    <!--    第三种查询方式  多条查询-对象属性的方式-->
+    <select id="selectMultiStudent" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2 where name=#{name} or age=#{age}
+    </select>
+
+    <!--resultMap 建立列名和java属性名的关系-->
+    <resultMap id="MyStuMap" type="com.bjpowernode.domain.MyStudent">
+        <!--column：列名；property:java类型属性名-->
+        <!--主键列，名称id-->
+        <id column="id" property="myId" />
+        <!--非主键列，名称result-->
+        <result column="name" property="myName" />
+        <result column="email" property="myEmail" />
+        <result column="age" property="myAge" />
+    </resultMap>
+    <select id="selectStudentMap" resultMap="MyStuMap">
+        select id,name,email,age from t_student2 order by id
+    </select>
+
+    <!--动态sql-IF
+        <if ：test="使用参数java对象的属性值作为判断条件，语法：属性=xx值"
+    -->
+    <select id="selectIfStudent" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2 where 1=1
+        <if test="name != null and name != ''">
+            and name = #{name}
+        </if>
+        <if test="age > 0">
+            or age > #{age}
+
+        </if>
+    </select>
+
+    <!--动态sql-Where
+       <where ：test="使用参数java对象的属性值作为判断条件，语法：属性=xx值"
+   -->
+    <select id="selectWhereStudent" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2
+        <where>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="age > 0">
+                and age > #{age}
+            </if>
+        </where>
+
+    </select>
+
+    <!--动态sql-Foreach
+       <foreach ：test="使用参数java对象的属性值作为判断条件，语法：属性=xx值"
+   -->
+    <select id="selectForeachStudent" resultType="com.bjpowernode.domain.Student">
+        select id,name,email,age from t_student2 where id in
+        <foreach collection="list" item="student" open="(" close=")" separator=",">
+            #{student.id}
+        </foreach>
+    </select>
+
+    <!--动态sql-Foreach-2
+      <foreach ：test="使用参数java对象的属性值作为判断条件，语法：属性=xx值"
+  -->
+    <select id="selectForeachStu" resultType="com.bjpowernode.domain.Student">
+        select * from t_student2 where id in
+        <foreach collection="list" item="ididid" open="(" close=")" separator=",">
+            #{ididid}
+        </foreach>
+    </select>
+
+
+</mapper>

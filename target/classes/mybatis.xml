@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+    <!--配置文件配置，resource："类的根目录" 一定要配置在configuration第一条-->
+    <properties resource="jdbc.properties"/>
+
+
+    <!--  settings：控制mybatis全局行为  -->
+    <settings>
+        <!--   设置mybatis的输出日志     -->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+
+    <!-- 定义resultType的别名-->
+
+    <typeAliases>
+
+       <!--  不建议使用别名，resultType建议直接使用全限定名称【别名可能会出异常，别名重复】
+       &lt;!&ndash;第一种方式  type:自定义类型的全限定名称；  alias：别名&ndash;&gt;
+        <typeAlias type="com.bjpowernode.domain.Student" alias="stu"/>
+        <typeAlias type="com.bjpowernode.vo.QueryParam" alias="QP"/>
+
+        &lt;!&ndash;第二种方式  package指定类限定路径，别名为类名&ndash;&gt;
+        <package name="com.bjpowernode.domain"/>
+        <package name="com.bjpowernode.vo"/>
+        -->
+    </typeAliases>
+
+    <!--pageHelper插件：要求放在environments前面-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+    </plugins>
+    
+    <!-- default和id必须一致，表示使用的是相同的一个数据库       -->
+    <environments default="development">
+        <environment id="development">
+
+            <transactionManager type="JDBC"/> <!--MANAGED 委托个其他服务器-->
+            <!--UPOOLED表示不使用连接池，先创建连接，执行sql，再关闭连接
+            mybatis会创建UnPooledDataSource类-->
+            <dataSource type="POOLED">  <!--使用连接池，mybatis会创建PooledDataSource类-->
+                <property name="driver" value="${jdbc.driver}"/>  <!--配置文件：${文件中的name}-->
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.pswd}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <!--第一种方式  mapper指定一个文件的位置，可以多写      -->
+<!--        <mapper resource="com/bjpowernode/dao/StudentDao.xml" />-->
+        <!--第二种方式  包名,可以多写 -->
+        <package name="com.bjpowernode.dao"/>
+    </mappers>
+
+    <!--注意：
+    1、mapper文件必须和dao接口同一目录
+    2、mapper文件名必须和接口名一致，区分大小写
+    -->
+</configuration>
